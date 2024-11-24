@@ -1,31 +1,17 @@
-import sqlite3
 import requests
 import time
 import pandas as pd
 from flask import Flask, jsonify
+from bokeh.plotting import figure, show
 
 
 class MonitorService:
-    def __init__(self, slave_url, local_db_name="display_data.db"):
+    def __init__(self, slave_url):
         self.slave_url = slave_url
-        self.local_db_name = local_db_name
-        self.status = "waiting for transorm service"  # Initial status
-        self.init_db()
+        self.status = "waiting for transform service"  # Initial status
+        self.data = pd.DataFrame()
 
-    def init_db(self):
-        """Initialize the local SQLite database."""
-        with sqlite3.connect(self.local_db_name) as conn:
-            cursor = conn.cursor()
-            # Create table for transferred data
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS display_data (
-                    location TEXT,
-                    driver_number INTEGER,
-                    position INTEGER,
-                    datetime DATETIME
-                )
-            ''')
-            conn.commit()
+
 
     def check_slave_status(self):
         """Check the slave service's /health endpoint."""
@@ -50,16 +36,30 @@ class MonitorService:
             if data.empty:
                 print("No data returned from slave API.")
                 return
-            print(data)
-            # Write data to local SQLite database
-            with sqlite3.connect(self.local_db_name) as local_conn:
-                data.to_sql('session_data', local_conn, if_exists='replace', index=False)
-
             self.status = "ready"  # Update status to ready
+            self.data = data
             print(f"Transferred {len(data)} rows to the local database.")
         except Exception as e:
             self.status = "error"  # Update status to error
             print(f"Error during data transfer: {e}")
+
+    def plot_data(self):
+        # Create diagram area
+        data = self.data
+        p = figure(title="Position of drivers", x_axis_label="Events", y_axis_label="Position",
+                   x_range=data["events"], y_range=(20, 0), height=400, width=800)  # y range is the possible positions
+
+        # Add lines
+        colors = ["blue", "red", "green"]
+        for i, racer in enumerate(data.keys() - {"events"}):
+            p.line(data["events"], data[racer], line_width=2, color=colors[i], legend_label=racer)
+
+        # Add details
+        p.legend.title = "Drivers"
+        p.legend.location = "top_left"
+        p.yaxis.ticker = list(range(1, len(data) + 1))
+
+        show(p)
 
     def run(self):
         # Monitor the slave service and transfer data when ready.
@@ -72,6 +72,7 @@ class MonitorService:
                 print("Loading service is ready. Transferring data...")
                 self.transfer_data()
                 success = True
+                #self.plot_data()
             else:
                 print("Loading is not ready. Waiting...")
 
