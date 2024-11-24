@@ -86,7 +86,7 @@ class MonitorService:
             SELECT location, driver_number, position,
                 DENSE_RANK() OVER(ORDER BY datetime ASC) AS event_no
             FROM session_data
-            WHERE session_name='Race'
+            WHERE session_name='Race' AND location='Melbourne'
         '''
         try:
             with sqlite3.connect(self.local_db_name) as conn:
