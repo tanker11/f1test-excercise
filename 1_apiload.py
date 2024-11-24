@@ -128,7 +128,29 @@ class LoadService:
             self.status = "error"  # Hiba esetén állapot frissítése 'error'-ra
             print(f"Error fetching or storing data: {e}")
             raise
+    def internal_query(self):
+        query = '''
+            SELECT m.location, s.session_name, m.meeting_key, s.session_key, p.driver_number, p.position, p.date
+            FROM meetings m
+            JOIN sessions s
+            ON s.meeting_key=m.meeting_key
+            JOIN positions p
+            ON p.session_key=s.session_key
+        '''
+        try:
+            with sqlite3.connect(self.db_name) as conn:
+                cursor = conn.cursor()
+                cursor.execute(query)
+                rows = cursor.fetchall()
 
+            # Convert data to list of dictionaries
+            data = [
+                {"location": row[0], "session_name": row[1], "meeting_key": row[2], "session_key": row[3], "driver_number": row[4], "position": row[5], "datetime": row[6]}
+                for row in rows
+            ]
+            return jsonify(data)
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
 
 app = Flask(__name__)
 service = LoadService()
@@ -137,6 +159,11 @@ service = LoadService()
 def health_check():
     #API végpont az aktuális státusz lekérdezésére
     return jsonify({"status": service.status})
+
+@app.route('/data', methods=['GET'])
+def get_data():
+    #Fetch data from the SQLite database.
+    return service.internal_query()
 
 def background_task():
     #Háttérfolyamat az adatbetöltéshez
