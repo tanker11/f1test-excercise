@@ -119,9 +119,9 @@ Három mikroszolgáltatás futtatását egy adatletöltés-feldolgozás-megjalan
 
 !!!A feladat nincsen finomhangolva és optimalizálva, lehetnek benne javítandó részek!!!
 
-#Eredeti feladat
+# Eredeti feladat
 
-##Feladat részletei
+## Feladat részletei
 
 Adatok beszerzése egy publikus forrásból: Használj egy nyilvánosan elérhető API-t vagy egy könnyen scrape-elhető weboldalt. Gyűjtsd az adatokat egy SQL vagy noSQL adatbázisba, amely jobban illik a kiválasztott adatszerkezethez. Az adatok lehetnek például tőzsdei árak, piactér hirdetések, helyi éttermek ebédmenüi – olyan forrást válassz, ami üzleti szempontból releváns.
 
@@ -131,7 +131,7 @@ A megoldás publikálása: A megoldásod tedd lokálisan használhatóvá fronte
 
 
 
-##Technikai követelmények
+## Technikai követelmények
 
 Programozási nyelv: A feladatot olyan programozási nyelven oldd meg, amelyben komfortosan dolgozol, bár a Python előnyt jelent számunkra.
 
@@ -143,7 +143,7 @@ Dokumentálás. Kérünk, hogy a munkád alapszinten dokumentáld. Néhány szó
 
 
 
-##Példák lehetséges megoldásokra
+## Példák lehetséges megoldásokra
 
 Ebédmenük összegyűjtése és megjelenítése egy adott lokáció környékén: Keresd meg, hogy a helyi éttermek milyen ebédmenüket kínálnak, és jelenítsd meg egy felületen a napi kínálatot.
 
@@ -157,7 +157,7 @@ Időjárás-előrejelzés és tényadatok elemzése és megjelenítése: Gyűjts
 
 
 
-##A feladat ütemezése és a beadandó anyagok
+## A feladat ütemezése és a beadandó anyagok
 
 A feladat megoldására összesen kb. 6 órát szánj. A végén a következőket várjuk tőled:
 
