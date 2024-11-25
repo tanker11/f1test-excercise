@@ -5,9 +5,10 @@ import time
 from urllib.request import urlopen
 from flask import Flask, jsonify
 import threading
+import os
 
 class LoadService:
-    def __init__(self, db_name="f1_data.db"):
+    def __init__(self, db_name="/app/db/loaddata.db"):
         self.db_name = db_name
         self.status = "init"  # Inicializált állapot
         self.init_db()
@@ -59,6 +60,7 @@ class LoadService:
                 ''')
                 conn.commit()
             print("Database initialized.")
+            print(f"Database path: {os.path.abspath(self.db_name)}")
         except Exception as e:
             self.status = "error"
             print(f"Error initializing database: {e}")
@@ -99,7 +101,7 @@ class LoadService:
                     position_data = json.loads(position_details.read().decode('utf-8'))
                     position_actual = pd.DataFrame(position_data)
                     position_df = pd.concat([position_df, position_actual], ignore_index=True)
-                    time.sleep(0.2)
+                    time.sleep(0.3)
 
             # Session és position letárolása adatbázisban
             with sqlite3.connect(self.db_name) as conn:

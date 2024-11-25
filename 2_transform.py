@@ -5,7 +5,7 @@ import pandas as pd
 from flask import Flask, jsonify
 
 class MonitorService:
-    def __init__(self, slave_url, local_db_name="monitor_data.db"):
+    def __init__(self, slave_url, local_db_name="/app/db/transformdata.db"):
         self.slave_url = slave_url
         self.local_db_name = local_db_name
         self.status = "waiting for loading service"  # Initial status
@@ -105,7 +105,7 @@ class MonitorService:
 
 # Flask app for the /health endpoint
 app = Flask(__name__)
-monitor_service = MonitorService(slave_url="http://localhost:5000")  # Update URL as needed
+monitor_service = MonitorService(slave_url="http://apiload1:5000") 
 
 
 @app.route('/health', methods=['GET'])
