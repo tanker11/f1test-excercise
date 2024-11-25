@@ -1,0 +1,544 @@
+Starting up
+Checking loading service status...
+Loading service is ready. Transferring data...
+Transferred 294 rows to the local database.
+LINEUP:
+    driver_number  event_no   location  position
+0               1         1  Melbourne         1
+1              63         1  Melbourne         2
+2              44         1  Melbourne         3
+3              14         1  Melbourne         4
+4              55         1  Melbourne         5
+5              18         1  Melbourne         6
+6              16         1  Melbourne         7
+7              23         1  Melbourne         8
+8              10         1  Melbourne         9
+9              27         1  Melbourne        10
+10             31         1  Melbourne        11
+11             22         1  Melbourne        12
+12              4         1  Melbourne        13
+13             20         1  Melbourne        14
+14             21         1  Melbourne        15
+15             81         1  Melbourne        16
+16             24         1  Melbourne        17
+17              2         1  Melbourne        18
+18             77         1  Melbourne        19
+19             11         1  Melbourne        20
+************************************************
+    driver_number  event_no   location  position
+20             63         2  Melbourne         1
+21              1         2  Melbourne         2
+************************************************
+    driver_number  event_no   location  position
+22             44         3  Melbourne         2
+23              1         3  Melbourne         3
+************************************************
+    driver_number  event_no   location  position
+24             55         4  Melbourne         4
+25             14         4  Melbourne         5
+************************************************
+    driver_number  event_no   location  position
+26             23         5  Melbourne         6
+27             18         5  Melbourne         7
+28             16         5  Melbourne         8
+************************************************
+    driver_number  event_no   location  position
+29             10         6  Melbourne         8
+30             16         6  Melbourne         9
+************************************************
+    driver_number  event_no   location  position
+31             31         7  Melbourne         9
+32             16         7  Melbourne        10
+33             27         7  Melbourne        11
+************************************************
+    driver_number  event_no   location  position
+34             27         8  Melbourne        10
+35             16         8  Melbourne        11
+************************************************
+    driver_number  event_no   location  position
+36             22         9  Melbourne        11
+37             16         9  Melbourne        12
+************************************************
+    driver_number  event_no   location  position
+38              4        10  Melbourne        12
+39             16        10  Melbourne        13
+************************************************
+    driver_number  event_no   location  position
+40             20        11  Melbourne        13
+41             16        11  Melbourne        14
+************************************************
+    driver_number  event_no   location  position
+42             81        12  Melbourne        14
+43             16        12  Melbourne        15
+44             21        12  Melbourne        16
+************************************************
+    driver_number  event_no   location  position
+45             24        13  Melbourne        15
+46             16        13  Melbourne        16
+47             21        13  Melbourne        17
+************************************************
+    driver_number  event_no   location  position
+48             21        14  Melbourne        16
+49             16        14  Melbourne        17
+************************************************
+    driver_number  event_no   location  position
+50              2        15  Melbourne        17
+51             16        15  Melbourne        18
+************************************************
+    driver_number  event_no   location  position
+52             11        16  Melbourne        18
+53             16        16  Melbourne        19
+54             77        16  Melbourne        20
+************************************************
+    driver_number  event_no   location  position
+55             77        17  Melbourne        19
+56             16        17  Melbourne        20
+************************************************
+    driver_number  event_no   location  position
+57             27        18  Melbourne         9
+58             31        18  Melbourne        10
+************************************************
+    driver_number  event_no   location  position
+59             22        19  Melbourne        10
+60             31        19  Melbourne        11
+************************************************
+    driver_number  event_no   location  position
+61              4        20  Melbourne        11
+62             31        20  Melbourne        12
+************************************************
+    driver_number  event_no   location  position
+63             20        21  Melbourne        12
+64             31        21  Melbourne        13
+************************************************
+    driver_number  event_no   location  position
+65             81        22  Melbourne        13
+66             31        22  Melbourne        14
+************************************************
+    driver_number  event_no   location  position
+67             21        23  Melbourne        14
+68             31        23  Melbourne        15
+69             24        23  Melbourne        16
+************************************************
+    driver_number  event_no   location  position
+70             77        24  Melbourne        17
+71              2        24  Melbourne        18
+72             11        24  Melbourne        19
+************************************************
+    driver_number  event_no   location  position
+73             11        25  Melbourne        18
+74              2        25  Melbourne        19
+************************************************
+    driver_number  event_no   location  position
+75             11        26  Melbourne        17
+76             77        26  Melbourne        18
+************************************************
+    driver_number  event_no   location  position
+77             11        27  Melbourne        16
+78             24        27  Melbourne        17
+************************************************
+    driver_number  event_no   location  position
+79             44        28  Melbourne         1
+80             63        28  Melbourne         2
+************************************************
+    driver_number  event_no   location  position
+81              1        29  Melbourne         2
+82             63        29  Melbourne         3
+************************************************
+    driver_number  event_no   location  position
+83             14        30  Melbourne         3
+84             63        30  Melbourne         4
+85             55        30  Melbourne         5
+************************************************
+    driver_number  event_no   location  position
+86             18        31  Melbourne         4
+87             63        31  Melbourne         5
+88             55        31  Melbourne         6
+89             23        31  Melbourne         7
+************************************************
+    driver_number  event_no   location  position
+90             10        32  Melbourne         5
+91             63        32  Melbourne         6
+92             55        32  Melbourne         7
+93             23        32  Melbourne         8
+************************************************
+    driver_number  event_no   location  position
+94             27        33  Melbourne         6
+95             63        33  Melbourne         7
+96             55        33  Melbourne         8
+97             23        33  Melbourne         9
+************************************************
+    driver_number  event_no   location  position
+98             22        34  Melbourne         9
+99             23        34  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+100              4        35  Melbourne        10
+101             23        35  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+102             81        36  Melbourne        11
+103             23        36  Melbourne        12
+104             20        36  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+105             21        37  Melbourne        12
+106             23        37  Melbourne        13
+107             20        37  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+108             31        38  Melbourne        13
+109             23        38  Melbourne        14
+110             20        38  Melbourne        15
+************************************************
+     driver_number  event_no   location  position
+111             11        39  Melbourne        14
+112             23        39  Melbourne        15
+113             20        39  Melbourne        16
+************************************************
+     driver_number  event_no   location  position
+114             24        40  Melbourne        15
+115             23        40  Melbourne        16
+116             20        40  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+117             77        41  Melbourne        16
+118             23        41  Melbourne        17
+119             20        41  Melbourne        18
+************************************************
+     driver_number  event_no   location  position
+120              2        42  Melbourne        17
+121             23        42  Melbourne        18
+122             20        42  Melbourne        19
+************************************************
+     driver_number  event_no   location  position
+123             20        43  Melbourne        18
+124             23        43  Melbourne        19
+************************************************
+     driver_number  event_no   location  position
+125             22        44  Melbourne         8
+126             55        44  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+127              4        45  Melbourne         9
+128             55        45  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+129             81        46  Melbourne        10
+130             55        46  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+131             11        47  Melbourne        13
+132             31        47  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+133              2        48  Melbourne        16
+134             77        48  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+135             10        49  Melbourne         4
+136             18        49  Melbourne         5
+************************************************
+     driver_number  event_no   location  position
+137             63        50  Melbourne         5
+138             18        50  Melbourne         6
+139             27        50  Melbourne         7
+************************************************
+     driver_number  event_no   location  position
+140             55        51  Melbourne        10
+141             81        51  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+142             24        52  Melbourne        12
+143             21        52  Melbourne        13
+144             11        52  Melbourne        14
+145             31        52  Melbourne        15
+************************************************
+     driver_number  event_no   location  position
+146             31        53  Melbourne        13
+147             21        53  Melbourne        14
+148             11        53  Melbourne        15
+************************************************
+     driver_number  event_no   location  position
+149             20        54  Melbourne        14
+150             21        54  Melbourne        15
+151             11        54  Melbourne        16
+152              2        54  Melbourne        17
+153             77        54  Melbourne        18
+************************************************
+     driver_number  event_no   location  position
+154              2        55  Melbourne        15
+155             21        55  Melbourne        16
+156             11        55  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+157             11        56  Melbourne        16
+158             21        56  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+159             55        57  Melbourne         9
+160              4        57  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+161              1        58  Melbourne         1
+162             44        58  Melbourne         2
+************************************************
+     driver_number  event_no   location  position
+163             55        59  Melbourne         8
+164             22        59  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+165             63        60  Melbourne         4
+166             10        60  Melbourne         5
+************************************************
+     driver_number  event_no   location  position
+167             11        61  Melbourne        15
+168              2        61  Melbourne        16
+************************************************
+     driver_number  event_no   location  position
+169             55        62  Melbourne         7
+170             27        62  Melbourne         8
+************************************************
+     driver_number  event_no   location  position
+171              4        63  Melbourne         9
+172             22        63  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+173             55        64  Melbourne         6
+174             18        64  Melbourne         7
+************************************************
+     driver_number  event_no   location  position
+175             11        65  Melbourne        14
+176             20        65  Melbourne        15
+************************************************
+     driver_number  event_no   location  position
+177             31        66  Melbourne        12
+178             24        66  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+179             11        67  Melbourne        13
+180             24        67  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+181             10        68  Melbourne         4
+182             63        68  Melbourne         5
+************************************************
+     driver_number  event_no   location  position
+183             55        69  Melbourne         5
+184             63        69  Melbourne         6
+************************************************
+     driver_number  event_no   location  position
+185             18        70  Melbourne         6
+186             63        70  Melbourne         7
+************************************************
+     driver_number  event_no   location  position
+187             27        71  Melbourne         7
+188             63        71  Melbourne         8
+************************************************
+     driver_number  event_no   location  position
+189              4        72  Melbourne         8
+190             63        72  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+191             22        73  Melbourne         9
+192             63        73  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+193             81        74  Melbourne        10
+194             63        74  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+195             31        75  Melbourne        11
+196             63        75  Melbourne        12
+************************************************
+     driver_number  event_no   location  position
+197             11        76  Melbourne        12
+198             63        76  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+199             24        77  Melbourne        13
+200             63        77  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+201             20        78  Melbourne        14
+202             63        78  Melbourne        15
+************************************************
+     driver_number  event_no   location  position
+203              2        79  Melbourne        15
+204             63        79  Melbourne        16
+************************************************
+     driver_number  event_no   location  position
+205             77        80  Melbourne        16
+206             63        80  Melbourne        17
+207             21        80  Melbourne        18
+************************************************
+     driver_number  event_no   location  position
+208             21        81  Melbourne        17
+209             63        81  Melbourne        18
+************************************************
+     driver_number  event_no   location  position
+210             21        82  Melbourne        16
+211             77        82  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+212             11        83  Melbourne        11
+213             31        83  Melbourne        12
+************************************************
+     driver_number  event_no   location  position
+214             11        84  Melbourne        10
+215             81        84  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+216             11        85  Melbourne         9
+217             22        85  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+218             55        86  Melbourne         4
+219             10        86  Melbourne         5
+************************************************
+     driver_number  event_no   location  position
+220             31        87  Melbourne        11
+221             81        87  Melbourne        12
+************************************************
+     driver_number  event_no   location  position
+222             31        88  Melbourne        10
+223             22        88  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+224             77        89  Melbourne        16
+225             21        89  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+226             81        90  Melbourne        11
+227             22        90  Melbourne        12
+************************************************
+     driver_number  event_no   location  position
+228             24        91  Melbourne        12
+229             22        91  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+230             20        92  Melbourne        13
+231             22        92  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+232             77        93  Melbourne        15
+233              2        93  Melbourne        16
+************************************************
+     driver_number  event_no   location  position
+234             20        94  Melbourne        12
+235             24        94  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+236             21        95  Melbourne        16
+237              2        95  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+238             11        96  Melbourne         8
+239              4        96  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+240             11        97  Melbourne         7
+241             27        97  Melbourne         8
+************************************************
+     driver_number  event_no   location  position
+242              2        98  Melbourne        16
+243             21        98  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+244              4        99  Melbourne         8
+245             27        99  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+246             24       100  Melbourne        12
+247             20       100  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+248             22       101  Melbourne        13
+249             20       101  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+250             77       102  Melbourne        14
+251             20       102  Melbourne        15
+************************************************
+     driver_number  event_no   location  position
+252              2       103  Melbourne        15
+253             20       103  Melbourne        16
+************************************************
+     driver_number  event_no   location  position
+254             21       104  Melbourne        16
+255             20       104  Melbourne        17
+************************************************
+     driver_number  event_no   location  position
+256             22       105  Melbourne        12
+257             24       105  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+258             21       106  Melbourne        15
+259              2       106  Melbourne        16
+************************************************
+     driver_number  event_no   location  position
+260             18       107  Melbourne         5
+261             10       107  Melbourne         6
+************************************************
+     driver_number  event_no   location  position
+262             11       108  Melbourne         6
+263             10       108  Melbourne         7
+************************************************
+     driver_number  event_no   location  position
+264              4       109  Melbourne         7
+265             10       109  Melbourne         8
+************************************************
+     driver_number  event_no   location  position
+266             27       110  Melbourne         8
+267             10       110  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+268             81       111  Melbourne         9
+269             10       111  Melbourne        10
+270             31       111  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+271             24       112  Melbourne        10
+272             10       112  Melbourne        11
+273             31       112  Melbourne        12
+274             22       112  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+275             22       113  Melbourne        11
+276             10       113  Melbourne        12
+277             31       113  Melbourne        13
+************************************************
+     driver_number  event_no   location  position
+278             77       114  Melbourne        12
+279             10       114  Melbourne        13
+280             31       114  Melbourne        14
+************************************************
+     driver_number  event_no   location  position
+281             18       115  Melbourne         4
+282             11       115  Melbourne         5
+283              4       115  Melbourne         6
+284             27       115  Melbourne         7
+285             55       115  Melbourne         8
+************************************************
+     driver_number  event_no   location  position
+286             81       116  Melbourne         8
+287             55       116  Melbourne         9
+************************************************
+     driver_number  event_no   location  position
+288             24       117  Melbourne         9
+289             55       117  Melbourne        10
+************************************************
+     driver_number  event_no   location  position
+290             22       118  Melbourne        10
+291             55       118  Melbourne        11
+************************************************
+     driver_number  event_no   location  position
+292             77       119  Melbourne        11
+293             55       119  Melbourne        12
+************************************************
+ * Serving Flask app '3_display'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5002
+ * Running on http://192.168.0.206:5002
+Press CTRL+C to quit

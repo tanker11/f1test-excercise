@@ -1,24 +1,39 @@
 # Forma-1 adatmegjelenítés mikroszolgáltaásokkal
 Munkanév: f1test-excercise
 
-A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből.
+A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből, az ok: átlagosnál nagyobb érdeklődés a sport iránt.
 A kiválasztott adatforrás: https://openf1.org/?python#api-methods
+
+Ez API-n keresztül szolgáltat JSON válaszokat, melyekben a lekérdezett adatok szerepelnek (ld. lentebb).
+Az API-val lekérdezett adatokat JSON-ban fogadjuk, és átalakítjuk Pandas dataframe-ekké, amelyet aztán sqlite adatbázisba mentünk.
+Így bemutatható az adatbáziskezelés, és a modularizáció is: minden mikroalkalmazás saját sqlite adatbázist használ, amikhez kívülről nem lehet direktben hozzáférni, csak a szabályozott API interfészen keresztül.
+Az adattranszformációt az API->belső DB->Pandas DF->feldolgozás->API-n felkínálás folyamaton valósítjuk meg.
+A moduláris felépítés egy elméleti esetben lehetővé tenné, hogy felhőbe helyezve a mikroszolgáltatásokat, pl. egy Kubernetes környezetben fürtözve, igény szerint skálázva, több példányban futhassanak.
+
+## Az elkészítés megjeleníteni
+Miután kiválasztottam a kiszemelt adatforrást, a cél az volt, hogy valamilyen grafikus megjelenítést haszbáljak, böngészőből.
+Így olyan megjelenítő könyvtárat választottam amit pythonban egyszerűen lehetett tesztelni, majd webszolgáltatás endpointjának is felhasználni, így esett a választás a 
+Bokeh könyvtárra. Eközben kidolgoztam vázlatosan, hogy az adatbetöltés után milyen mennyiségű és struktúrájú adat kerüljön át a konténerizált mikroszolgáltatások között.
+A tesztelt modulokat-függvényeket a proof_of_concept mappába tettem.
+
+Ez egy megvalósítási példa, így az adatfeldolgozás határai és mélysége egy a sok lehetséges közül.
 
 
 ## A megoldás vázlata
 ### Adatfelolvasás API interfészen keresztül - APILOAD
 Az adatokat az openf1.org-ról API-n keresztül letöltjük és egy belső sqlite adatbázisba tesszük
 A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
-A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja
+A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja.
+Az "ömlesztve" azt jelenti, hogy szűrés nélkül az összes adatot egy JOIN-nal összefűzött lekérdezés eredményeként adja át.
 
 ### Adatok áttöltése - TRANSFORM
 Az adatokat API-n keresztül áttöltjük, a felkínált, ömlesztett formában (egyetlen tábla)
 A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
-A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja
+A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja.
+A szűrés immár csak egy adott verseny pozícióadatait adja tovább.
 
 ### Adatfelolvasás API interfészen keresztül - DISPLAY
 Az adatokat API-n keresztül áttöltjük, a felkínált, szűrt formában.
-Ez már csak a szükséges adatokat tartalmazza.
 Itt viszont a formátum nem felel meg a bokeh plot-nak, így át kell alakítani.
 A legfontosabb elem, hogy a versenyzők pozíciói (positions) csak akkor szerepelnek, ha épp változik, egyéb esetben nincs hozzá adat.
 A változások nem körönként, hanem időadattal vannak megadva, ezt a lekérdezés folyamán helyettesítjük egy folyamatos sorszámozással (a TRANSFORM lekérdezés folyamán)
@@ -103,8 +118,7 @@ A 3 modul egymásra épül, így a második vizsgálja az első, a harmadik pedi
 Akkor lép tovább, ha az "ready".
 Az első automatikusan letölti az adatokat, a második "ready" után áttülti magának, a hatmadik pedig szintén "ready" után elkészíti a diagramot.
 
-# IDE jön a blokkvázlat az appok közötti kommunikációra
-****
+![BLOKKVÁZLAT](images/block_diagram.png)
 
 ## Konténerizáció
 A három modult egy-egy Dockerfile ír le a létrehozandó Python környezettel és a futtatandó parancsokkal együtt.
@@ -131,6 +145,8 @@ A Docker compose hatására elindul 3 mikroszolgáltatás:
 
 Az első kettő (slave service) állapota lekérdezhető a host gépen a localhost:portszám/health
 paranccsal. Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között.
+
+FONTOS: az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva.
 
 A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:5002 URL-en érhető el:
 
@@ -164,6 +180,10 @@ A helyszíneket és a pilótaneveket az eredeti API-ból le lehetne kérdezni, �
 A Bokeh library-nek van bokeh server lehetősége, amikor a grafikon egy kiszolgálón születik meg.
 A dokumentáció itt található: https://docs.bokeh.org/en/latest/docs/user_guide/server.html
 Ezzel növelhető a modularitáa és többklienses kiszolgálás is lehetséges.
+
+### API endpoint az adatoknak
+A teljes plot adathalmazt vagy grafikont (pl. javascriptben) elérhetővé lehet tenni a /plot endpointon például.
+Dokumentáció: https://docs.bokeh.org/en/3.0.0/docs/user_guide/output/embed.html#
 
 ### Időjárási adatok felhasználása
 A jelen kódban ugyan lekérdezzük az időjárásadatokat az idényre, de végül nem kerül felhasználásra. Ezeket meg lehetne jeleníteni az időadatok alapján a grafikonon, vagy csak kiírni, hogy esős futamnak számított-e az adott, lekérdezett futam.
