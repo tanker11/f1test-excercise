@@ -1,4 +1,5 @@
-# f1test-excercise
+# Forma-1 adatmegjelenítés mikroszolgáltaásokkal
+Munkanév: f1test-excercise
 
 A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből.
 A kiválasztott adatforrás: https://openf1.org/?python#api-methods
@@ -102,16 +103,47 @@ A 3 modul egymásra épül, így a második vizsgálja az első, a harmadik pedi
 Akkor lép tovább, ha az "ready".
 Az első automatikusan letölti az adatokat, a második "ready" után áttülti magának, a hatmadik pedig szintén "ready" után elkészíti a diagramot.
 
+# IDE jön a blokkvázlat az appok közötti kommunikációra
+****
+
 ## Konténerizáció
-A három odult egy-egy Dockerfile ír le a létrehozandó Python környezettel és a futtatandó parancsokkal együtt.
-A három modul függőségekben való indítására pedig Docker Compose-t használunk, mely kijelöli a használt portokat.
+A három modult egy-egy Dockerfile ír le a létrehozandó Python környezettel és a futtatandó parancsokkal együtt.
+A három modul függőségekben való indítására pedig Docker Compose-t használunk, mely kijelöli a használt portokat is.
+Mindhárom egy python alapú konténer, amiben kijelöljük a /app mappát munkakönyvtárnak, és feltöltjük rá a vonatkozó python kódot, melyet a CMD paranccsal futtatunk.
+Ezt megelőzően a RUN parancsban létrehozzuk az adatbázis alkönyvtárakat, illetve telepítjük pip paranccsal a futáshoz szükséges python könyvtárakat.
 
 # Használat
+
+## Telepítés - elindítás
 Telepítsük a Docker Desktopot magunknak.
 Töltsük le ezt a Repository-t, és csomagoljuk ki.
-Másoljuk be a fájlokat egy általunk választott helyre, és ott a terminálban adjuk ki a Docker Compose parancsot, hogy felépüljön a három mikorszolgáltatás konténere, és elinduljanak a szolgáltatások.
+Másoljuk be a fájlokat egy általunk választott helyre, és ott a terminálban adjuk ki a Docker Compose parancsot, hogy felépüljön a három mikorszolgáltatás konténere, és elinduljanak a szolgáltatások:
 
-# IDE JÖN MAJD A VÉGEREDMÉNY MEGNÉZÉSÉNEK LEÍRÁSA
+'''docker-compose up -d'''
+
+## Futás közben
+A Docker compose hatására elindul 3 mikroszolgáltatás:
+1_apiload - port:5000
+2_transform - port: 5001
+3_display - port 5002
+(ez utóbbi az előző kettőtől függően indítódik el)
+
+Az első kettő (slave service) állapota lekérdezhető a host gépen a localhost:portszám/health
+paranccsal. Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között.
+
+A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:5002 URL-en érhető el:
+
+# IDE JÖN A VÉGEREDMÉNY KÉPERNYŐKÉPE
+****
+
+Az adatokat összevethetjük a futam leírásával a Wikipédián:
+https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
+
+
+### A munka végeztével
+Ha megnéztük az eredményt, akkor a '''docker-compose down''' paranccsal leállíthatjuk és törölhetjük az előzőekben létrehozott erőforrásokat.
+
+
 
 # Mit mutat be a megoldás
 Ingyenes, webes F1 adatok letöltését, és átalakítás utáni megjelenítését böngészőben.
@@ -119,7 +151,50 @@ Három mikroszolgáltatás futtatását egy adatletöltés-feldolgozás-megjalan
 
 !!!A feladat nincsen finomhangolva és optimalizálva, lehetnek benne javítandó részek!!!
 
-# Eredeti feladat
+## Javítási, optimalizálási lehetőségek
+A megadott javítási lehetőségek a jelenlegi modularitás mellett elvégezhetők, így pl. egy agilis projektmanagement mellett sprintekben megvalósíthatók, ráadásul a modularitás miatt nem feltétlenül érintik az összes modult.
+Kivétel: a legnagyobb, architekturális változást a dedikált szerver alakmazás jelenti.
+
+### Szűrés URL-ből
+Jelen állapotában 2->3 fázisba áttöltött adatokat a példa kedvéért a kódból a "Melbourne" nevű helyszínre szűrjük. Fejlesztési lehetőség, hogy querystring paraméterként adjuk át a helyszínt.
+A helyszíneket és a pilótaneveket az eredeti API-ból le lehetne kérdezni, és egy interaktív felületen megjeleníteni.
+
+### Szerver app a grafikonnak
+A Bokeh library-nek van bokeh server lehetősége, amikor a grafikon egy kiszolgálón születik meg.
+A dokumentáció itt található: https://docs.bokeh.org/en/latest/docs/user_guide/server.html
+Ezzel növelhető a modularitáa és többklienses kiszolgálás is lehetséges.
+
+### Időjárási adatok felhasználása
+A jelen kódban ugyan lekérdezzük az időjárásadatokat az idényre, de végül nem kerül felhasználásra. Ezeket meg lehetne jeleníteni az időadatok alapján a grafikonon, vagy csak kiírni, hogy esős futamnak számított-e az adott, lekérdezett futam.
+
+### Fölösleges adatok eldobása
+A mostani megoldás áttölti az összes adatot az összes session-ről, de a végső megjelenítés nem használ mindent, csak a "Race" adatokat. A mostani megoldásban egy SQL lekérdezésben történik ezek kiszűrése, de a memóriahasználat csökkentése, és az SQL query lefutásának gyorsítása érdekében a pandas.DataFrame.drop metódussal el lehetne dobni a szükségtelen adatokat.
+
+### Loggolás és állapotlekérdezések javítása
+A megoldás print parancsokkal kommunikál a konzol felé, és a /health API endpointon lehet lekérdezni az állapotát. Itt csak alapvető állapotok vannak, ezeket lehetne részletesebb információszolgáltatásra is felhasználni az éppen futó folyamatokról. Ezeket az állapotokat akár az interaktív kezelőfelületen is meg lehetne jeleníteni, így a felhasználó tudná, meddig tart az inicializálás-betöltés-adattranszformáció folyamata, mert csak ezután lehet lekérdezni az előkészített adattáblából.
+
+### Színek használata
+Minden Forma-1-es csapatnak van saját jellemző színe. Egy előre letárolt adattábla alpján használhatnánk ezeket a színeket a megjelenítéshez, így a Forma-1 nézéshez szokott szemnek könnyebben megtalálhatók az adatok.
+
+Team            Color
+Mercedes        #27F4D2
+Red Bull Racing	#3671C6
+Ferrari	        #E8002D
+McLaren	        #FF8000
+Alpine	        #FF87BC
+RB	            #6692FF
+Aston Martin	  #229971
+Williams	      #64C4FF
+Kick Sauber	    #52E252
+Haas	          #B6BABD
+
+(Source: Formula 1 Website)
+
+### Hibakezelés
+A jelen megvalósítás feltételezi, hogy 10 csapat van, 20 induló pilótával. Ennek ellenőrzése nem része a kódnak, így nem feltétlenül univerzális.
+
+
+# Eredeti feladatkiírás
 
 ## Feladat részletei
 
