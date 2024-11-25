@@ -165,6 +165,8 @@ A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:500
 Az adatokat összevethetjük a futam leírásával a Wikipédián:
 https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
 
+![MELBOURNE](images/wiki_melbourne_2003.png)
+
 
 ### A munka végeztével
 Ha megnéztük az eredményt, akkor a ```docker-compose down``` paranccsal leállíthatjuk és törölhetjük az előzőekben létrehozott erőforrásokat.
@@ -213,10 +215,10 @@ Red Bull Racing	#3671C6
 Ferrari	        #E8002D
 McLaren	        #FF8000
 Alpine	        #FF87BC
-RB	            #6692FF
+RB	          #6692FF
 Aston Martin    #229971
 Williams        #64C4FF
-Kick Sauber	    #52E252
+Kick Sauber	  #52E252
 Haas	          #B6BABD
 ```
 (Source: Formula 1 Website)
