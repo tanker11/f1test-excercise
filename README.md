@@ -119,7 +119,8 @@ Telepítsük a Docker Desktopot magunknak.
 Töltsük le ezt a Repository-t, és csomagoljuk ki.
 Másoljuk be a fájlokat egy általunk választott helyre, és ott a terminálban adjuk ki a Docker Compose parancsot, hogy felépüljön a három mikorszolgáltatás konténere, és elinduljanak a szolgáltatások:
 
-'''docker-compose up -d'''
+```docker-compose up -d```
+
 
 ## Futás közben
 A Docker compose hatására elindul 3 mikroszolgáltatás:
@@ -141,7 +142,7 @@ https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
 
 
 ### A munka végeztével
-Ha megnéztük az eredményt, akkor a '''docker-compose down''' paranccsal leállíthatjuk és törölhetjük az előzőekben létrehozott erőforrásokat.
+Ha megnéztük az eredményt, akkor a ```docker-compose down``` paranccsal leállíthatjuk és törölhetjük az előzőekben létrehozott erőforrásokat.
 
 
 
