@@ -184,11 +184,11 @@ Red Bull Racing	#3671C6
 Ferrari	        #E8002D
 McLaren	        #FF8000
 Alpine	        #FF87BC
-RB	          #6692FF
-Aston Martin  #229971
-Williams    #64C4FF
-Kick Sauber	  #52E252
-Haas	         #B6BABD
+RB	            #6692FF
+Aston Martin    #229971
+Williams        #64C4FF
+Kick Sauber	    #52E252
+Haas	          #B6BABD
 ```
 (Source: Formula 1 Website)
 
