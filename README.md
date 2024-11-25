@@ -47,6 +47,7 @@ A változások nem körönként, hanem időadattal vannak megadva, ezt a lekérd
 Itt érhető el a dokumentáció: https://openf1.org/?python#meetings
 
 Tipikus output:
+```
 [
   {
     "circuit_key": 61,
@@ -63,12 +64,14 @@ Tipikus output:
     "year": 2023
   }
 ]
+```
 
 ### Sessions - Egy hétvégén belüli események
 Példák: Practice 1,Practice 2,Practice 3, Qualifying, Race
 Itt érhető el a dokumentáció: https://openf1.org/?python#sessions
 
 Tipikus output:
+```
 [
   {
     "circuit_key": 7,
@@ -87,12 +90,14 @@ Tipikus output:
     "year": 2023
   }
 ]
+```
 
 ### Position - Egy session-ön belül az elért helyezések
 
 Itt érhető el a dokumentáció: https://openf1.org/?python#position
 
 Tipikus output:
+```
 [
   {
     "date": "2023-08-26T09:30:47.199000+00:00",
@@ -109,6 +114,7 @@ Tipikus output:
     "session_key": 9144
   }
 ]
+```
 
 Itt a 40-es pilóta két időpillanatban elért pozícióját látjuk, előbb 2., majd 3. helyezést kapunk vissza eredményül.
 
