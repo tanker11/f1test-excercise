@@ -1,9 +1,10 @@
 import requests
 import time
 import pandas as pd
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from bokeh.plotting import figure, show
 from bokeh.palettes import Category20
+from bokeh.embed import components
 
 
 class MonitorService:
@@ -108,7 +109,9 @@ class MonitorService:
         leg = p.legend[0]
         p.add_layout(leg, 'right')
 
-        show(p)
+        # Embed Bokeh plot into HTML
+        script, div = components(p)
+        return render_template("plot.html", bokeh_script=script, bokeh_div=div)
 
     def run(self):
         # Monitor the slave service and transfer data when ready.
@@ -122,7 +125,7 @@ class MonitorService:
                 self.transfer_data()
                 success = True
                 self.format_data()
-                self.plot_data()
+
             else:
                 print("Loading is not ready. Waiting...")
 
@@ -134,9 +137,12 @@ monitor_service = MonitorService(slave_url="http://localhost:5001")  # Update UR
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Return the current status of the Monitor Service."""
+    #Return the current status of the Monitor Service.
     return jsonify({"status": monitor_service.status})
 
+@app.route('/', methods=['GET'])
+def plot():
+    return monitor_service.plot_data()
 
 if __name__ == "__main__":
     # Start monitoring and run the Flask API
