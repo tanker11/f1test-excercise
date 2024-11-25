@@ -26,7 +26,6 @@ A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetv
 A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja.
 Az "ömlesztve" azt jelenti, hogy szűrés nélkül az összes adatot egy JOIN-nal összefűzött lekérdezés eredményeként adja át.
 
-Adattábla tartalma:
 ![LOAD_DB](images/loaddata_db_tables.png)
 
 ### Adatok áttöltése - TRANSFORM
