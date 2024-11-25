@@ -26,11 +26,16 @@ A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetv
 A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja.
 Az "ömlesztve" azt jelenti, hogy szűrés nélkül az összes adatot egy JOIN-nal összefűzött lekérdezés eredményeként adja át.
 
+Adattábla tartalma:
+![LOAD_DB](images/loaddata_db_tables.png)
+
 ### Adatok áttöltése - TRANSFORM
 Az adatokat API-n keresztül áttöltjük, a felkínált, ömlesztett formában (egyetlen tábla)
 A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
 A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja.
 A szűrés immár csak egy adott verseny pozícióadatait adja tovább.
+
+![BLOKKVÁZLAT](images/transformdata_db_tables.png)
 
 ### Adatfelolvasás API interfészen keresztül - DISPLAY
 Az adatokat API-n keresztül áttöltjük, a felkínált, szűrt formában.
@@ -111,12 +116,12 @@ Itt a 40-es pilóta két időpillanatban elért pozícióját látjuk, előbb 2.
 ### Weather - nem használtam fel az adatokat
 Itt érhető el a dokumentáció: https://openf1.org/?python#weather
 
-# VÁZLAT KÉP
 
 # Modulok összefűzése
 A 3 modul egymásra épül, így a második vizsgálja az első, a harmadik pedig vizsgálja a második állapotát a /health endpointon keresztül.
 Akkor lép tovább, ha az "ready".
-Az első automatikusan letölti az adatokat, a második "ready" után áttülti magának, a hatmadik pedig szintén "ready" után elkészíti a diagramot.
+Az első automatikusan letölti az adatokat, a második "ready" után áttölti magának, a harmadik pedig szintén "ready" után elkészíti a diagramot.
+Blokkvázlat:
 
 ![BLOKKVÁZLAT](images/block_diagram.png)
 
@@ -150,8 +155,7 @@ FONTOS: az első alkalmazás "loading" állapota percekig is eltarthat, mert az 
 
 A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:5002 URL-en érhető el:
 
-# IDE JÖN A VÉGEREDMÉNY KÉPERNYŐKÉPE
-****
+![EREDMÉNY](images/result_plot.png)
 
 Az adatokat összevethetjük a futam leírásával a Wikipédián:
 https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
