@@ -177,6 +177,7 @@ A megoldás print parancsokkal kommunikál a konzol felé, és a /health API end
 ### Színek használata
 Minden Forma-1-es csapatnak van saját jellemző színe. Egy előre letárolt adattábla alpján használhatnánk ezeket a színeket a megjelenítéshez, így a Forma-1 nézéshez szokott szemnek könnyebben megtalálhatók az adatok.
 
+```
 Team            Color
 Mercedes        #27F4D2
 Red Bull Racing	#3671C6
@@ -188,7 +189,7 @@ Aston Martin	  #229971
 Williams	      #64C4FF
 Kick Sauber	    #52E252
 Haas	          #B6BABD
-
+```
 (Source: Formula 1 Website)
 
 ### Hibakezelés
