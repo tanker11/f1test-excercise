@@ -1,23 +1,43 @@
-# f1test-excercise
+# Forma-1 adatmegjelenítés mikroszolgáltaásokkal
+Munkanév: f1test-excercise
 
-A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből.
+A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből, az ok: átlagosnál nagyobb érdeklődés a sport iránt.
 A kiválasztott adatforrás: https://openf1.org/?python#api-methods
+
+Ez API-n keresztül szolgáltat JSON válaszokat, melyekben a lekérdezett adatok szerepelnek (ld. lentebb).
+Az API-val lekérdezett adatokat JSON-ban fogadjuk, és átalakítjuk Pandas dataframe-ekké, amelyet aztán sqlite adatbázisba mentünk.
+Így bemutatható az adatbáziskezelés, és a modularizáció is: minden mikroalkalmazás saját sqlite adatbázist használ, amikhez kívülről nem lehet direktben hozzáférni, csak a szabályozott API interfészen keresztül.
+Az adattranszformációt az API->belső DB->Pandas DF->feldolgozás->API-n felkínálás folyamaton valósítjuk meg.
+A moduláris felépítés egy elméleti esetben lehetővé tenné, hogy felhőbe helyezve a mikroszolgáltatásokat, pl. egy Kubernetes környezetben fürtözve, igény szerint skálázva, több példányban futhassanak.
+
+## Az elkészítés megjeleníteni
+Miután kiválasztottam a kiszemelt adatforrást, a cél az volt, hogy valamilyen grafikus megjelenítést haszbáljak, böngészőből.
+Így olyan megjelenítő könyvtárat választottam amit pythonban egyszerűen lehetett tesztelni, majd webszolgáltatás endpointjának is felhasználni, így esett a választás a 
+Bokeh könyvtárra. Eközben kidolgoztam vázlatosan, hogy az adatbetöltés után milyen mennyiségű és struktúrájú adat kerüljön át a konténerizált mikroszolgáltatások között.
+A tesztelt modulokat-függvényeket a proof_of_concept mappába tettem.
+
+Ez egy megvalósítási példa, így az adatfeldolgozás határai és mélysége egy a sok lehetséges közül.
 
 
 ## A megoldás vázlata
 ### Adatfelolvasás API interfészen keresztül - APILOAD
 Az adatokat az openf1.org-ról API-n keresztül letöltjük és egy belső sqlite adatbázisba tesszük
 A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
-A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja
+A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja.
+Az "ömlesztve" azt jelenti, hogy szűrés nélkül az összes adatot egy JOIN-nal összefűzött lekérdezés eredményeként adja át.
+
+![LOAD_DB](images/loaddata_db_tables.png)
 
 ### Adatok áttöltése - TRANSFORM
 Az adatokat API-n keresztül áttöltjük, a felkínált, ömlesztett formában (egyetlen tábla)
 A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
-A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja
+A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja.
+A szűrés immár csak egy adott verseny pozícióadatait adja tovább.
+
+![BLOKKVÁZLAT](images/transformdata_db_tables.png)
 
 ### Adatfelolvasás API interfészen keresztül - DISPLAY
 Az adatokat API-n keresztül áttöltjük, a felkínált, szűrt formában.
-Ez már csak a szükséges adatokat tartalmazza.
 Itt viszont a formátum nem felel meg a bokeh plot-nak, így át kell alakítani.
 A legfontosabb elem, hogy a versenyzők pozíciói (positions) csak akkor szerepelnek, ha épp változik, egyéb esetben nincs hozzá adat.
 A változások nem körönként, hanem időadattal vannak megadva, ezt a lekérdezés folyamán helyettesítjük egy folyamatos sorszámozással (a TRANSFORM lekérdezés folyamán)
@@ -27,6 +47,7 @@ A változások nem körönként, hanem időadattal vannak megadva, ezt a lekérd
 Itt érhető el a dokumentáció: https://openf1.org/?python#meetings
 
 Tipikus output:
+```
 [
   {
     "circuit_key": 61,
@@ -43,12 +64,14 @@ Tipikus output:
     "year": 2023
   }
 ]
+```
 
 ### Sessions - Egy hétvégén belüli események
 Példák: Practice 1,Practice 2,Practice 3, Qualifying, Race
 Itt érhető el a dokumentáció: https://openf1.org/?python#sessions
 
 Tipikus output:
+```
 [
   {
     "circuit_key": 7,
@@ -67,12 +90,14 @@ Tipikus output:
     "year": 2023
   }
 ]
+```
 
 ### Position - Egy session-ön belül az elért helyezések
 
 Itt érhető el a dokumentáció: https://openf1.org/?python#position
 
 Tipikus output:
+```
 [
   {
     "date": "2023-08-26T09:30:47.199000+00:00",
@@ -89,29 +114,64 @@ Tipikus output:
     "session_key": 9144
   }
 ]
+```
 
 Itt a 40-es pilóta két időpillanatban elért pozícióját látjuk, előbb 2., majd 3. helyezést kapunk vissza eredményül.
 
 ### Weather - nem használtam fel az adatokat
 Itt érhető el a dokumentáció: https://openf1.org/?python#weather
 
-# VÁZLAT KÉP
 
 # Modulok összefűzése
 A 3 modul egymásra épül, így a második vizsgálja az első, a harmadik pedig vizsgálja a második állapotát a /health endpointon keresztül.
 Akkor lép tovább, ha az "ready".
-Az első automatikusan letölti az adatokat, a második "ready" után áttülti magának, a hatmadik pedig szintén "ready" után elkészíti a diagramot.
+Az első automatikusan letölti az adatokat, a második "ready" után áttölti magának, a harmadik pedig szintén "ready" után elkészíti a diagramot.
+Blokkvázlat:
+
+![BLOKKVÁZLAT](images/block_diagram.png)
 
 ## Konténerizáció
-A három odult egy-egy Dockerfile ír le a létrehozandó Python környezettel és a futtatandó parancsokkal együtt.
-A három modul függőségekben való indítására pedig Docker Compose-t használunk, mely kijelöli a használt portokat.
+A három modult egy-egy Dockerfile ír le a létrehozandó Python környezettel és a futtatandó parancsokkal együtt.
+A három modul függőségekben való indítására pedig Docker Compose-t használunk, mely kijelöli a használt portokat is.
+Mindhárom egy python alapú konténer, amiben kijelöljük a /app mappát munkakönyvtárnak, és feltöltjük rá a vonatkozó python kódot, melyet a CMD paranccsal futtatunk.
+Ezt megelőzően a RUN parancsban létrehozzuk az adatbázis alkönyvtárakat, illetve telepítjük pip paranccsal a futáshoz szükséges python könyvtárakat.
 
 # Használat
+
+## Telepítés - elindítás
 Telepítsük a Docker Desktopot magunknak.
 Töltsük le ezt a Repository-t, és csomagoljuk ki.
-Másoljuk be a fájlokat egy általunk választott helyre, és ott a terminálban adjuk ki a Docker Compose parancsot, hogy felépüljön a három mikorszolgáltatás konténere, és elinduljanak a szolgáltatások.
+Másoljuk be a fájlokat egy általunk választott helyre, és ott a terminálban adjuk ki a Docker Compose parancsot, hogy felépüljön a három mikorszolgáltatás konténere, és elinduljanak a szolgáltatások:
 
-# IDE JÖN MAJD A VÉGEREDMÉNY MEGNÉZÉSÉNEK LEÍRÁSA
+```docker-compose up -d```
+
+
+## Futás közben
+A Docker compose hatására elindul 3 mikroszolgáltatás:
+1_apiload - port:5000
+2_transform - port: 5001
+3_display - port 5002
+(ez utóbbi az előző kettőtől függően indítódik el)
+
+Az első kettő (slave service) állapota lekérdezhető a host gépen a localhost:portszám/health
+paranccsal. Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között.
+
+FONTOS: az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva.
+
+A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:5002 URL-en érhető el:
+
+![EREDMÉNY](images/result_plot.png)
+
+Az adatokat összevethetjük a futam leírásával a Wikipédián:
+https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
+
+![MELBOURNE](images/wiki_melbourne_2003.png)
+
+
+### A munka végeztével
+Ha megnéztük az eredményt, akkor a ```docker-compose down``` paranccsal leállíthatjuk és törölhetjük az előzőekben létrehozott erőforrásokat.
+
+
 
 # Mit mutat be a megoldás
 Ingyenes, webes F1 adatok letöltését, és átalakítás utáni megjelenítését böngészőben.
@@ -119,7 +179,55 @@ Három mikroszolgáltatás futtatását egy adatletöltés-feldolgozás-megjalan
 
 !!!A feladat nincsen finomhangolva és optimalizálva, lehetnek benne javítandó részek!!!
 
-# Eredeti feladat
+## Javítási, optimalizálási lehetőségek
+A megadott javítási lehetőségek a jelenlegi modularitás mellett elvégezhetők, így pl. egy agilis projektmanagement mellett sprintekben megvalósíthatók, ráadásul a modularitás miatt nem feltétlenül érintik az összes modult.
+Kivétel: a legnagyobb, architekturális változást a dedikált szerver alakmazás jelenti.
+
+### Szűrés URL-ből
+Jelen állapotában 2->3 fázisba áttöltött adatokat a példa kedvéért a kódból a "Melbourne" nevű helyszínre szűrjük. Fejlesztési lehetőség, hogy querystring paraméterként adjuk át a helyszínt.
+A helyszíneket és a pilótaneveket az eredeti API-ból le lehetne kérdezni, és egy interaktív felületen megjeleníteni.
+
+### Szerver app a grafikonnak
+A Bokeh library-nek van bokeh server lehetősége, amikor a grafikon egy kiszolgálón születik meg.
+A dokumentáció itt található: https://docs.bokeh.org/en/latest/docs/user_guide/server.html
+Ezzel növelhető a modularitáa és többklienses kiszolgálás is lehetséges.
+
+### API endpoint az adatoknak
+A teljes plot adathalmazt vagy grafikont (pl. javascriptben) elérhetővé lehet tenni a /plot endpointon például.
+Dokumentáció: https://docs.bokeh.org/en/3.0.0/docs/user_guide/output/embed.html#
+
+### Időjárási adatok felhasználása
+A jelen kódban ugyan lekérdezzük az időjárásadatokat az idényre, de végül nem kerül felhasználásra. Ezeket meg lehetne jeleníteni az időadatok alapján a grafikonon, vagy csak kiírni, hogy esős futamnak számított-e az adott, lekérdezett futam.
+
+### Fölösleges adatok eldobása
+A mostani megoldás áttölti az összes adatot az összes session-ről, de a végső megjelenítés nem használ mindent, csak a "Race" adatokat. A mostani megoldásban egy SQL lekérdezésben történik ezek kiszűrése, de a memóriahasználat csökkentése, és az SQL query lefutásának gyorsítása érdekében a pandas.DataFrame.drop metódussal el lehetne dobni a szükségtelen adatokat.
+
+### Loggolás és állapotlekérdezések javítása
+A megoldás print parancsokkal kommunikál a konzol felé, és a /health API endpointon lehet lekérdezni az állapotát. Itt csak alapvető állapotok vannak, ezeket lehetne részletesebb információszolgáltatásra is felhasználni az éppen futó folyamatokról. Ezeket az állapotokat akár az interaktív kezelőfelületen is meg lehetne jeleníteni, így a felhasználó tudná, meddig tart az inicializálás-betöltés-adattranszformáció folyamata, mert csak ezután lehet lekérdezni az előkészített adattáblából.
+
+### Színek használata
+Minden Forma-1-es csapatnak van saját jellemző színe. Egy előre letárolt adattábla alpján használhatnánk ezeket a színeket a megjelenítéshez, így a Forma-1 nézéshez szokott szemnek könnyebben megtalálhatók az adatok.
+
+```
+Team            Color
+Mercedes        #27F4D2
+Red Bull Racing	#3671C6
+Ferrari	        #E8002D
+McLaren	        #FF8000
+Alpine	        #FF87BC
+RB	          #6692FF
+Aston Martin    #229971
+Williams        #64C4FF
+Kick Sauber	  #52E252
+Haas	          #B6BABD
+```
+(Source: Formula 1 Website)
+
+### Hibakezelés
+A jelen megvalósítás feltételezi, hogy 10 csapat van, 20 induló pilótával. Ennek ellenőrzése nem része a kódnak, így nem feltétlenül univerzális.
+
+
+# Eredeti feladatkiírás
 
 ## Feladat részletei
 
