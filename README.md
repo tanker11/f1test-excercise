@@ -154,13 +154,20 @@ A Docker compose hatására elindul 3 mikroszolgáltatás:
 (ez utóbbi az előző kettőtől függően indítódik el)
 
 Az első kettő (slave service) állapota lekérdezhető a host gépen a localhost:portszám/health
-paranccsal. Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között.
+paranccsal.
 
-FONTOS: az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva.
+Az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva:
+![LOADING](images/loading_in_progress.png)
 
-A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:5002 URL-en érhető el:
+Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között. amíg még várakoznia kell a második (TRANSFORM) szolgáltatásnak, addig ezt válaszolja az endpointon:
+![EREDMÉNY](images/waiting_for_load_service.png)
+
+Amennyiben ez is "ready"-re változik, akkor kész a kiszolgálásra.
+Ezt az időközben szintén elinduló DISPLAY folyamat is figyeli, és elkészíti a diagramot a háttérben.
+Ez a localhost:5002 URL-en érhető el:
 
 ![EREDMÉNY](images/result_plot.png)
+
 
 Az adatokat összevethetjük a futam leírásával a Wikipédián:
 https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
