@@ -1,8 +1,10 @@
 # Forma-1 adatmegjelenítés mikroszolgáltaásokkal
-Munkanév: f1test-excercise
+## Munkanév: f1test-excercise
 
-A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből, az ok: átlagosnál nagyobb érdeklődés a sport iránt.
-A kiválasztott adatforrás: https://openf1.org/?python#api-methods
+A megoldásban Forma-1-es eredményeket használok a 2023-as, befejezett idényből, az ok: átlagosnál nagyobb érdeklődés a sport iránt. :)
+
+A kiválasztott adatforrás: openf1.org
+Dokumentáció: https://openf1.org/?python#api-methods
 
 Ez API-n keresztül szolgáltat JSON válaszokat, melyekben a lekérdezett adatok szerepelnek (ld. lentebb).
 Az API-val lekérdezett adatokat JSON-ban fogadjuk, és átalakítjuk Pandas dataframe-ekké, amelyet aztán sqlite adatbázisba mentünk.
@@ -10,8 +12,8 @@ Az API-val lekérdezett adatokat JSON-ban fogadjuk, és átalakítjuk Pandas dat
 Az adattranszformációt az API->belső DB->Pandas DF->feldolgozás->API-n felkínálás folyamaton valósítjuk meg.
 A moduláris felépítés egy elméleti esetben lehetővé tenné, hogy felhőbe helyezve a mikroszolgáltatásokat, pl. egy Kubernetes környezetben fürtözve, igény szerint skálázva, több példányban futhassanak.
 
-## Az elkészítés megjeleníteni
-Miután kiválasztottam a kiszemelt adatforrást, a cél az volt, hogy valamilyen grafikus megjelenítést haszbáljak, böngészőből.
+## Az elkészítés menete
+Miután kiválasztottam a kiszemelt adatforrást, a cél az volt, hogy valamilyen grafikus megjelenítést használjak, böngészőből.
 Így olyan megjelenítő könyvtárat választottam amit pythonban egyszerűen lehetett tesztelni, majd webszolgáltatás endpointjának is felhasználni, így esett a választás a 
 Bokeh könyvtárra. Eközben kidolgoztam vázlatosan, hogy az adatbetöltés után milyen mennyiségű és struktúrájú adat kerüljön át a konténerizált mikroszolgáltatások között.
 A tesztelt modulokat-függvényeket a proof_of_concept mappába tettem.
@@ -19,30 +21,12 @@ A tesztelt modulokat-függvényeket a proof_of_concept mappába tettem.
 Ez egy megvalósítási példa, így az adatfeldolgozás határai és mélysége egy a sok lehetséges közül.
 
 
-## A megoldás vázlata
-### Adatfelolvasás API interfészen keresztül - APILOAD
-Az adatokat az openf1.org-ról API-n keresztül letöltjük és egy belső sqlite adatbázisba tesszük
-A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
-A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja.
-Az "ömlesztve" azt jelenti, hogy szűrés nélkül az összes adatot egy JOIN-nal összefűzött lekérdezés eredményeként adja át.
+# A megoldás vázlata
 
-![LOAD_DB](images/loaddata_db_tables.png)
+## Adatfelolvasás API interfészen keresztül - APILOAD
+Az adatokat az openf1.org-ról API-n keresztül letöltjük és egy belső sqlite adatbázisba tesszük.
 
-### Adatok áttöltése - TRANSFORM
-Az adatokat API-n keresztül áttöltjük, a felkínált, ömlesztett formában (egyetlen tábla)
-A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
-A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja.
-A szűrés immár csak egy adott verseny pozícióadatait adja tovább.
-
-![BLOKKVÁZLAT](images/transformdata_db_tables.png)
-
-### Adatfelolvasás API interfészen keresztül - DISPLAY
-Az adatokat API-n keresztül áttöltjük, a felkínált, szűrt formában.
-Itt viszont a formátum nem felel meg a bokeh plot-nak, így át kell alakítani.
-A legfontosabb elem, hogy a versenyzők pozíciói (positions) csak akkor szerepelnek, ha épp változik, egyéb esetben nincs hozzá adat.
-A változások nem körönként, hanem időadattal vannak megadva, ezt a lekérdezés folyamán helyettesítjük egy folyamatos sorszámozással (a TRANSFORM lekérdezés folyamán)
-
-#Az adatforrásból lehívott adatok
+### Az adatforrásból lehívott adatok:
 ### MEETINGS - a versenyhétvégék
 Itt érhető el a dokumentáció: https://openf1.org/?python#meetings
 
@@ -120,6 +104,46 @@ Itt a 40-es pilóta két időpillanatban elért pozícióját látjuk, előbb 2.
 
 ### Weather - nem használtam fel az adatokat
 Itt érhető el a dokumentáció: https://openf1.org/?python#weather
+A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor "ready" állapotot.
+A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján "ömlesztve" felkínálja a betöltött adatokat (több tábla).
+Az "ömlesztve" azt jelenti, hogy szűrés nélkül az összes adatot egy JOIN-nal összefűzött lekérdezés eredményeként adja át.
+
+A betöltött táblák:
+![LOAD_DB_TABLES](images/loaddata_db_tables.png)
+
+A lekérdezés:
+```
+SELECT m.location, s.session_name, m.meeting_key, s.session_key, p.driver_number, p.position, p.date
+FROM meetings m
+JOIN sessions s
+ON s.meeting_key=m.meeting_key
+JOIN positions p
+ON p.session_key=s.session_key
+```
+
+
+## Adatok áttöltése - TRANSFORM
+Az adatokat API-n keresztül áttöltjük, a felkínált, ömlesztett formában (egyetlen tábla).
+A szolgáltatás a /health endpointon keresztük riportolja a folyamatot, illetve ha kész, akkor a "ready" állapotot.
+A /data endpointon keresztül egy előre gyártott SQL lekérdezés alapján szűrve felkínálja.
+A szűrés immár csak egy adott verseny pozícióadatait adja tovább.
+
+Az áttöltött tábla:
+![TRANSFORM_DB_TABLES](images/transformdata_db_tables.png)
+
+A lekérdezés:
+```
+SELECT location, driver_number, position,
+    DENSE_RANK() OVER(ORDER BY datetime ASC) AS event_no
+FROM session_data
+WHERE session_name='Race' AND location='Melbourne'
+```
+
+## Adatfelolvasás API interfészen keresztül - DISPLAY
+Az adatokat API-n keresztül áttöltjük, a felkínált, szűrt formában, amint a TRANSFORM alkalmazás állapotr "ready"-re vált.
+Itt viszont a formátum nem felel meg a bokeh plot-nak, így át kell alakítani.
+A legfontosabb elem, hogy a versenyzők pozíciói (positions) csak akkor szerepelnek, ha épp változik, egyéb esetben nincs hozzá adat. Ezeket a megelőző körben regisztrált pozícióval helyettesítjük.
+A változások nem körönként, hanem időadattal vannak megadva, ezt a lekérdezés folyamán helyettesítjük egy folyamatos sorszámozással (DENSE_RANK)
 
 
 # Modulok összefűzése
@@ -154,13 +178,20 @@ A Docker compose hatására elindul 3 mikroszolgáltatás:
 (ez utóbbi az előző kettőtől függően indítódik el)
 
 Az első kettő (slave service) állapota lekérdezhető a host gépen a localhost:portszám/health
-paranccsal. Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között.
+paranccsal.
 
-FONTOS: az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva.
+Az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva:
+![LOADING](images/loading_in_progress.png)
 
-A harmadik, amennyiben lefutott, elkészít egy grafikont, amely a localhost:5002 URL-en érhető el:
+Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között. amíg még várakoznia kell a második (TRANSFORM) szolgáltatásnak, addig ezt válaszolja az endpointon:
+![EREDMÉNY](images/waiting_for_load_service.png)
+
+Amennyiben ez is "ready"-re változik, akkor kész a kiszolgálásra.
+Ezt az időközben szintén elinduló DISPLAY folyamat is figyeli, és elkészíti a diagramot a háttérben.
+Ez a localhost:5002 URL-en érhető el:
 
 ![EREDMÉNY](images/result_plot.png)
+
 
 Az adatokat összevethetjük a futam leírásával a Wikipédián:
 https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
@@ -170,6 +201,7 @@ https://en.wikipedia.org/wiki/2023_Australian_Grand_Prix#Race_classification
 
 ### A munka végeztével
 Ha megnéztük az eredményt, akkor a ```docker-compose down``` paranccsal leállíthatjuk és törölhetjük az előzőekben létrehozott erőforrásokat.
+
 
 
 
