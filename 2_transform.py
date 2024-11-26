@@ -3,6 +3,7 @@ import requests
 import time
 import pandas as pd
 from flask import Flask, jsonify
+import threading
 
 class MonitorService:
     def __init__(self, slave_url, local_db_name="/app/db/transformdata.db"):
@@ -119,6 +120,9 @@ def get_data():
     return monitor_service.internal_query()
 
 if __name__ == "__main__":
+    # Háttérszál indítása
+    threading.Thread(target=monitor_service.run, daemon=True).start()
     # Start monitoring and run the Flask API
-    monitor_service.run()
     app.run(host="0.0.0.0", port=5001)
+
+
