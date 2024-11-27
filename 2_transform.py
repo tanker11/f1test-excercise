@@ -5,7 +5,10 @@ import pandas as pd
 from flask import Flask, jsonify
 import threading
 
-class MonitorService:
+class LoadService:
+    '''
+    Handles db and tables creation
+    '''
     def __init__(self, slave_url, local_db_name="/app/db/transformdata.db"):
         self.slave_url = slave_url
         self.local_db_name = local_db_name
@@ -13,10 +16,10 @@ class MonitorService:
         self.init_db()
 
     def init_db(self):
-        """Initialize the local SQLite database."""
+        #Initialize the local SQLite database
         with sqlite3.connect(self.local_db_name) as conn:
             cursor = conn.cursor()
-            # Create table for transferred data
+            #Create table for transferred data
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS session_data (
                     location TEXT,
@@ -32,7 +35,7 @@ class MonitorService:
             conn.commit()
 
     def check_slave_status(self):
-        """Check the slave service's /health endpoint."""
+        #Cehck API endpoint for status
         try:
             response = requests.get(f"{self.slave_url}/health", timeout=5)
             response.raise_for_status()
@@ -43,8 +46,8 @@ class MonitorService:
             return False
 
     def transfer_data(self):
-        """Query the slave API and transfer the data."""
-        api_endpoint = f"{self.slave_url}/data"  # Endpoint for fetching data
+        #Fetch data from /data API endpoint from slave service
+        api_endpoint = f"{self.slave_url}/data"
         try:
             response = requests.get(api_endpoint, timeout=10)
             response.raise_for_status()
@@ -69,7 +72,7 @@ class MonitorService:
 
 
     def run(self):
-        #Monitor the slave service and transfer data when ready.
+        #Monitor the slave service and transfer data when ready
         success = False
         print("Starting up")
         while not success:
@@ -83,6 +86,11 @@ class MonitorService:
                 print("Loading is not ready. Waiting...")
 
     def internal_query(self):
+
+        '''
+        Query for the data requested on /data endpoint from the internal database tables
+        '''
+
         query = '''
             SELECT location, driver_number, position,
                 DENSE_RANK() OVER(ORDER BY datetime ASC) AS event_no
@@ -104,25 +112,24 @@ class MonitorService:
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
-# Flask app for the /health endpoint
 app = Flask(__name__)
-monitor_service = MonitorService(slave_url="http://apiload1:5000") 
+service = LoadService(slave_url="http://apiload1:5000") 
 
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Return the current status of the Monitor Service."""
-    return jsonify({"status": monitor_service.status})
+    #Return the current status of the Monitor Service
+    return jsonify({"status": service.status})
 
 @app.route('/data', methods=['GET'])
 def get_data():
     #Fetch data from the SQLite database.
-    return monitor_service.internal_query()
+    return service.internal_query()
 
 if __name__ == "__main__":
-    # Háttérszál indítása
-    threading.Thread(target=monitor_service.run, daemon=True).start()
-    # Start monitoring and run the Flask API
+    #Starting background task
+    threading.Thread(target=service.run, daemon=True).start()
+    #Starting Flask
     app.run(host="0.0.0.0", port=5001)
 
 
