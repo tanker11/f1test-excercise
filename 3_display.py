@@ -5,6 +5,7 @@ from flask import Flask, jsonify, render_template
 from bokeh.plotting import figure, show
 from bokeh.palettes import Category20
 from bokeh.embed import components
+import threading
 
 
 class MonitorService:
@@ -19,13 +20,13 @@ class MonitorService:
                     "events": ["1", "2", "3", "4"],
                     "1": [1, 2, 3, 1],
                     "44": [2, 1, 1, 2],
-                    "16": [3, 3, 2, None],  # Pad missing values with None or NaN
+                    "16": [3, 3, 2, None],  # Padding of missing values with None
                 }
-                #this data structure is requested by the plot method we cerated as a Proof of Concept earlier
+                #This data structure is requested by the plot method we cerated as a Proof of Concept earlier
         """
 
     def check_slave_status(self):
-        #Check the slave service's /health endpoint.
+        #Cehck API endpoint for status
         try:
             response = requests.get(f"{self.slave_url}/health", timeout=5)
             response.raise_for_status()
@@ -36,8 +37,8 @@ class MonitorService:
             return False
 
     def transfer_data(self):
-        """Query the slave API and transfer the data."""
-        api_endpoint = f"{self.slave_url}/data"  # Endpoint for fetching data
+        #Fetch data from /data API endpoint from slave service
+        api_endpoint = f"{self.slave_url}/data" 
         try:
             response = requests.get(api_endpoint, timeout=10)
             response.raise_for_status()
@@ -55,9 +56,15 @@ class MonitorService:
             print(f"Error during data transfer: {e}")
 
     def format_data(self):
+        '''
+        Formats the data in the way it needs to feed the plot method
+        Example data format is in __init__ method
+        
+        '''        
         max_event_no = self.data["event_no"].max() #event numbers will be iterated throught to build up the dataset for plot
 
-        lineup = self.data[self.data["event_no"] == 1] #first event lists the starting positions
+        lineup = self.data[self.data["event_no"] == 1] #First event lists the starting positions
+        #Separation and title for the first block in console log
         print("LINEUP:")
         print(lineup)
         print("*" * 48)
@@ -65,23 +72,27 @@ class MonitorService:
         self.data_to_plot["events"] = []
         self.data_to_plot["events"].append("1")
 
-        drivers_list = [] #list to track all the drivers even if no event fro the given driver
+        drivers_list = [] #Create list to track all the drivers even if no event fro the given driver
 
         for row in lineup.itertuples():
-            self.data_to_plot[str(row.driver_number)] = [] #empty list
-            self.data_to_plot[str(row.driver_number)].append(row.position) #add starting position to the list
-            drivers_list.append(row.driver_number) #build list of drivers (first row of positions always shows this)
+            self.data_to_plot[str(row.driver_number)] = [] #Create empty list
+            self.data_to_plot[str(row.driver_number)].append(row.position) #Add starting position to the list
+            drivers_list.append(row.driver_number) #Build list of drivers (first row of positions always shows this)
 
-        self.numdrivers = len(drivers_list) #store number of drivers to handle colors
+        self.numdrivers = len(drivers_list) #Store number of drivers to handle colors
 
-        for i in range(2, max_event_no + 1): #iterate through from second up to the end
-            self.data_to_plot["events"].append(str(i)) #append actual event number to event data
-            event_subset = self.data[self.data["event_no"] == i] #select rows those showing the actual event (position changes at the same time)
-            for driver in drivers_list: #iterate through the drivers list
-                driverpos = event_subset[event_subset["driver_number"] == driver] #filtering for the actual driver in the list
-                if driverpos.empty: #if the dataframe is empty for the given driver, add the previous position
+        for i in range(2, max_event_no + 1): 
+            #Iterate through from second up to the end
+            self.data_to_plot["events"].append(str(i)) #Append actual event number to event data
+            event_subset = self.data[self.data["event_no"] == i] #Select rows those showing the actual event (position changes at the same time)
+            for driver in drivers_list: 
+                #Iterate through the drivers list
+                driverpos = event_subset[event_subset["driver_number"] == driver] #Filter for the actual driver in the list
+                if driverpos.empty: 
+                    #If the dataframe is empty for the given driver, add the previous position
                     self.data_to_plot[str(driver)].append(self.data_to_plot[str(driver)][-1])
-                else: #otherwise add the value of the new position
+                else: 
+                    #Otherwise add the value of the new position
                     found_pos = driverpos["position"].values
                     self.data_to_plot[str(driver)].append(int(found_pos[0]))
             print(event_subset)
@@ -114,7 +125,7 @@ class MonitorService:
         return render_template("plot.html", bokeh_script=script, bokeh_div=div)
 
     def run(self):
-        # Monitor the slave service and transfer data when ready.
+        # Monitor the slave service and transfer data when ready
         success = False
         print("Starting up")
         while not success:
@@ -137,14 +148,16 @@ monitor_service = MonitorService(slave_url="http://transform2:5001")  # Update U
 
 @app.route('/health', methods=['GET'])
 def health():
-    #Return the current status of the Monitor Service.
+    #Return the current status of the Monitor Service
     return jsonify({"status": monitor_service.status})
 
-@app.route('/', methods=['GET'])
+@app.route('/plot', methods=['GET'])
 def plot():
+    #Serve the plot request by executing the plot creation
     return monitor_service.plot_data()
 
 if __name__ == "__main__":
-    # Start monitoring and run the Flask API
-    monitor_service.run()
+    #Start monitoring and run the Flask API
+    threading.Thread(target=monitor_service.run, daemon=True).start()
+    #Starting Flask
     app.run(host="0.0.0.0", port=5002)

@@ -183,12 +183,14 @@ paranccsal.
 Az első alkalmazás "loading" állapota percekig is eltarthat, mert az API hozzáférés korlátozása miatt késleltetés van a letöltési lépések közé iktatva:
 ![LOADING](images/loading_in_progress.png)
 
-Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között. amíg még várakoznia kell a második (TRANSFORM) szolgáltatásnak, addig ezt válaszolja az endpointon:
-![EREDMÉNY](images/waiting_for_load_service.png)
+Ha a válasz "ready", akkor az adott szolgáltatás végzett a feladatával, és készen áll a /data endpointon átadni a feldolgozott adatokat. Ez belül meg is történik egymás között. Amíg még várakoznia kell a második (TRANSFORM) szolgáltatásnak, addig ezt válaszolja az endpointon:
+![WAITFORLOAD](images/waiting_for_load_service.png)
 
 Amennyiben ez is "ready"-re változik, akkor kész a kiszolgálásra.
-Ezt az időközben szintén elinduló DISPLAY folyamat is figyeli, és elkészíti a diagramot a háttérben.
-Ez a localhost:5002 URL-en érhető el:
+Ezt az időközben szintén elinduló DISPLAY folyamat is figyeli, és ha kész az előző service, akkor elkészíti a diagramot a háttérben. Amíg nincs kész, addig ez a válasz:
+![WAITFORTRANSFORM](images/waiting_for_transform_service.png)
+
+Ez a localhost:5002/plot URL-en érhető el:
 
 ![EREDMÉNY](images/result_plot.png)
 
@@ -210,6 +212,7 @@ Ingyenes, webes F1 adatok letöltését, és átalakítás utáni megjelenítés
 Három mikroszolgáltatás futtatását egy adatletöltés-feldolgozás-megjalanítés pipeline mentén, melyek elvégzik a fenti műveletet, miután egymás után felépültek, és jelentették egymásnak az állapotukat.
 
 !!!A feladat nincsen finomhangolva és optimalizálva, lehetnek benne javítandó részek!!!
+Az időkeret túllépése nélkül az alábbiakat nem végeztem el, de lehetséges javítást jelentenek:
 
 ## Javítási, optimalizálási lehetőségek
 A megadott javítási lehetőségek a jelenlegi modularitás mellett elvégezhetők, így pl. egy agilis projektmanagement mellett sprintekben megvalósíthatók, ráadásul a modularitás miatt nem feltétlenül érintik az összes modult.
@@ -218,6 +221,10 @@ Kivétel: a legnagyobb, architekturális változást a dedikált szerver alakmaz
 ### Szűrés URL-ből
 Jelen állapotában 2->3 fázisba áttöltött adatokat a példa kedvéért a kódból a "Melbourne" nevű helyszínre szűrjük. Fejlesztési lehetőség, hogy querystring paraméterként adjuk át a helyszínt.
 A helyszíneket és a pilótaneveket az eredeti API-ból le lehetne kérdezni, és egy interaktív felületen megjeleníteni.
+
+### Modularitás növelése
+API URL-ek változóba tevése, metódusok tovább darabolása. Pl. a szekvenciális API adatelérés és letárolás adatbázisban.
+Tesztelhetőség növelése: az adatbázis mentési helyét jelenleg manuálisan kell állítani attól függően, hogy direktben teszteljük a kódot, vagy konténerben (konténerspecifikus vizsgálat alapján).
 
 ### Szerver app a grafikonnak
 A Bokeh library-nek van bokeh server lehetősége, amikor a grafikon egy kiszolgálón születik meg.
